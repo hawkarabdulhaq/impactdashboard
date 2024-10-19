@@ -1,8 +1,8 @@
 import pandas as pd
 import streamlit as st
 
-# Define the URL to your CSV file (which will be hosted on GitHub or another source)
-CSV_URL = "https://raw.githubusercontent.com/<your-username>/<your-repository>/main/path-to-your-csv-file.csv"
+# Define the URL to your CSV file hosted on GitHub
+CSV_URL = "https://raw.githubusercontent.com/hawkarabdulhaq/impactdashboard/main/impactdata.csv"
 
 def display_token_details():
     try:
