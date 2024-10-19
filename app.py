@@ -46,10 +46,13 @@ def display_token_details():
 def display_basic_map():
     # Read the CSV data
     df = pd.read_csv(CSV_URL)
-
+    
+    # Rename columns to lowercase for Streamlit compatibility
+    df.rename(columns={'Latitude': 'lat', 'Longitude': 'lon'}, inplace=True)
+    
     # Basic Streamlit map visualization using Latitude/Longitude
     st.write("### Basic Map of Project Locations:")
-    st.map(df[['Latitude', 'Longitude']])
+    st.map(df[['lat', 'lon']])
 
 def display_detailed_map():
     st.write("### Detailed Map with Folium:")
