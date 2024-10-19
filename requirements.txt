@@ -1,5 +1,6 @@
 streamlit
 pandas
 requests
-folium 
+folium
 fastkml
+streamlit-folium
