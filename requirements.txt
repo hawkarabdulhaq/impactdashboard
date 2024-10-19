@@ -4,3 +4,4 @@ requests
 folium
 fastkml
 streamlit-folium
+shapely
