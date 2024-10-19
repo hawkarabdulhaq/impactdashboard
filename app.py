@@ -4,6 +4,7 @@ import folium
 from streamlit_folium import st_folium
 from fastkml import kml
 from shapely.geometry import Polygon
+import requests
 
 # Define the URL to your CSV file hosted on GitHub
 CSV_URL = "https://raw.githubusercontent.com/hawkarabdulhaq/impactdashboard/main/impactdata.csv"
@@ -46,9 +47,6 @@ def display_token_details():
 
 def parse_kml(kml_url):
     """Parses the KML file and extracts polygon data."""
-    # Use the Google Drive direct download link
-    kml_url = "https://drive.google.com/uc?export=download&id=1YxtCfZBm0q2-6s0V2qUydvGNrzmq0HRV"
-
     # Download the KML file
     kml_data = requests.get(kml_url).text
 
@@ -63,12 +61,18 @@ def parse_kml(kml_url):
 
     return polygons
 
-
 def display_detailed_map():
     st.write("### Detailed Map with Polygon Data from KML:")
 
     # Read the CSV data
     df = pd.read_csv(CSV_URL)
+
+    # Get the KML URL from the CSV file (assuming it's the last row in your dataset)
+    kml_url = df.iloc[-1]["KML"]
+    
+    if not kml_url:
+        st.error("No KML URL found in the CSV file.")
+        return
 
     # Create a Folium map centered on the first project
     m = folium.Map(location=[df['Latitude'].mean(), df['Longitude'].mean()], zoom_start=12)
@@ -81,7 +85,6 @@ def display_detailed_map():
         ).add_to(m)
 
     # Parse KML and add polygons to the map
-    kml_url = df.iloc[-1]["KML"]
     polygons = parse_kml(kml_url)
     
     for polygon in polygons:
