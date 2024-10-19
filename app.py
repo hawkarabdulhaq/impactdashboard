@@ -47,19 +47,35 @@ def display_token_details():
 
 def parse_kml(kml_url):
     """Parses the KML file and extracts polygon data."""
+    if "drive.google.com" in kml_url:
+        # Convert the Google Drive link to a direct download link
+        file_id = kml_url.split("/d/")[1].split("/")[0]
+        kml_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+
     # Download the KML file
-    kml_data = requests.get(kml_url).text
+    response = requests.get(kml_url)
 
-    k = kml.KML()
-    k.from_string(kml_data)
+    # Check if the response is valid
+    if response.status_code != 200:
+        st.error("Failed to download KML file.")
+        return []
 
-    polygons = []
-    for feature in list(k.features()):
-        for placemark in list(feature.features()):
-            if isinstance(placemark.geometry, Polygon):
-                polygons.append(placemark.geometry)
+    kml_data = response.text
 
-    return polygons
+    try:
+        k = kml.KML()
+        k.from_string(kml_data)
+
+        polygons = []
+        for feature in list(k.features()):
+            for placemark in list(feature.features()):
+                if isinstance(placemark.geometry, Polygon):
+                    polygons.append(placemark.geometry)
+
+        return polygons
+    except Exception as e:
+        st.error(f"An error occurred while parsing the KML file: {str(e)}")
+        return []
 
 def display_detailed_map():
     st.write("### Detailed Map with Polygon Data from KML:")
