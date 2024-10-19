@@ -1,7 +1,7 @@
 streamlit
 pandas
-requests
 folium
 fastkml
-streamlit-folium
 shapely
+requests
+streamlit-folium
