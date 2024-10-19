@@ -26,7 +26,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Step 4: Run the Streamlit app
-    - name: Run Streamlit app
+    # Step 4: Test the app (but don't run it)
+    - name: Lint and Test App
       run: |
-        streamlit run app.py --server.port 8501
+        echo "Testing Streamlit app for errors"
+        streamlit --version  # Test if Streamlit is installed correctly
+        python -m py_compile app.py  # Check for syntax errors in app.py
+
+    # Optional: You can also run other tests, like unit tests, here if you have them
