@@ -46,7 +46,12 @@ def display_token_details():
 
 def parse_kml(kml_url):
     """Parses the KML file and extracts polygon data."""
+    # Use the Google Drive direct download link
+    kml_url = "https://drive.google.com/uc?export=download&id=1YxtCfZBm0q2-6s0V2qUydvGNrzmq0HRV"
+
+    # Download the KML file
     kml_data = requests.get(kml_url).text
+
     k = kml.KML()
     k.from_string(kml_data)
 
@@ -57,6 +62,7 @@ def parse_kml(kml_url):
                 polygons.append(placemark.geometry)
 
     return polygons
+
 
 def display_detailed_map():
     st.write("### Detailed Map with Polygon Data from KML:")
