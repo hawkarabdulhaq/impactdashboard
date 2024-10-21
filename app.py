@@ -5,9 +5,15 @@ from streamlit_folium import st_folium
 from fastkml import kml
 from shapely.geometry import Polygon
 import requests
+import base64
 
 # Define the URL to your CSV file hosted on GitHub 
 CSV_URL = "https://raw.githubusercontent.com/hawkarabdulhaq/impactdashboard/main/impactdata.csv"
+
+def load_image(image_path):
+    """Load an image and convert it to base64."""
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
 
 def display_token_details():
     try:
@@ -38,9 +44,35 @@ def display_token_details():
             "Imv Document": last_row["Imv_Document"]
         }
 
+        # Prepare the display DataFrame
+        df_display = pd.DataFrame.from_dict(parameters, orient='index', columns=['Value']).reset_index().rename(columns={"index": "Parameter"})
+
+        # Load SDG icons and replace text with image tags
+        sdg_icons = {
+            "SDG3": load_image("image/SDG3.jpg"),
+            "SDG6": load_image("image/SDG6.jpg"),
+            "SDG7": load_image("image/SDG7.jpg"),
+            "SDG11": load_image("image/SDG11.jpg"),
+            "SDG13": load_image("image/SDG13.jpg"),
+        }
+
+        # Replace SDG texts with HTML image tags
+        sdg_images_html = []
+        for sdg, img_data in sdg_icons.items():
+            if sdg in last_row["SDGs"]:
+                sdg_images_html.append(f'<img src="data:image/jpeg;base64,{img_data}" alt="{sdg}" width="50" height="50">')
+
+        # Combine SDG images into a single string
+        sdg_images_str = ' '.join(sdg_images_html)
+        df_display.loc[df_display["Parameter"] == "SDGs", "Value"] = sdg_images_str
+
+        # Load and replace "Hasar Organization" with the logo
+        logo_data = load_image("image/Hasar_Organization.jpg")
+        df_display.loc[df_display["Parameter"] == "Implementer Partner", "Value"] = f'<img src="data:image/jpeg;base64,{logo_data}" alt="Hasar Organization" width="50" height="50">'
+
         # Display the token information in a Streamlit table
         st.write("### Token Information:")
-        st.table(pd.DataFrame.from_dict(parameters, orient='index', columns=['Value']).reset_index().rename(columns={"index": "Parameter"}))
+        st.markdown(df_display.to_html(escape=False), unsafe_allow_html=True)
     
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
